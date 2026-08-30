@@ -1,0 +1,30 @@
+{
+  "server": {
+    "url": "${MCP_URL:-http://localhost:3000/mcp}",
+    "headers": {
+      "authorization": "Bearer ${MCP_TOKEN}"
+    }
+  },
+  "models": ["anthropic:claude-sonnet-5", "openai:gpt-4.1-mini"],
+  "scenarios": [
+    {
+      "id": "search.keyword",
+      "description": "turns a plain keyword request into a search call",
+      "difficulty": "easy",
+      "messages": [{ "role": "user", "content": "Search for documents about \"cotton shirts\"." }],
+      "toolsToEnable": ["search"],
+      "expectedToolCalls": [{ "toolName": "search" }],
+      "tags": ["search"]
+    },
+    {
+      "id": "read.by-id",
+      "description": "passes the identifier through verbatim",
+      "difficulty": "easy",
+      "messages": [{ "role": "user", "content": "Get the document with ID \"abc-123\"." }],
+      "expectedToolCalls": [{ "toolName": "get_document", "requiredParams": { "id": "abc-123" } }],
+      "tags": ["read"]
+    }
+  ],
+  "reporters": { "console": true, "json": "eval-results.json" },
+  "failUnder": 70
+}

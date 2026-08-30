@@ -1,0 +1,5 @@
+# `files` in package.json is the allowlist; this covers anything it might otherwise sweep in.
+test/
+src/
+tsconfig*.json
+.github/

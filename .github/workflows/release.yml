@@ -1,0 +1,79 @@
+name: Release
+
+# Two-phase Changesets release.
+#
+#   push to master WITH pending changesets -> opens/updates a "Version Packages" PR that bumps the
+#                                             version and rewrites CHANGELOG.md
+#   merge of that PR (no changesets left)  -> builds, then publishes to npm and tags the release
+#
+# A push with no changesets and nothing to publish is a no-op, so this is safe to run on every
+# commit to master.
+#
+# Publishing uses npm trusted publishing (OIDC): there is no NPM_TOKEN. npm matches the request
+# against the trusted publisher configured for this package, which is keyed on the repository AND
+# this workflow's filename — renaming this file breaks publishing until npm is updated to match.
+
+on:
+  push:
+    branches: [master]
+
+  workflow_call:
+
+# Never let two releases interleave; a second push waits rather than racing the first to npm.
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+permissions:
+  contents: write # commit the version bump, push tags
+  pull-requests: write # open the Version Packages PR
+  id-token: write # mint the OIDC token npm exchanges for publish rights
+
+jobs:
+  # The same workflow PRs run, across the whole supported Node range. `release` needs it, so a red
+  # suite blocks both the Version Packages PR and the publish.
+  test:
+    uses: ./.github/workflows/test.yml
+
+  release:
+    name: Version or publish
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Changesets needs the full history to work out what has already been released.
+          fetch-depth: 0
+
+      # Install with bun to match bun.lock. The changesets CLI itself runs through node — its bin
+      # does a top-level `await import()` that bun does not settle, so `bunx changeset` exits
+      # having done nothing.
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      # Trusted publishing needs npm >= 11.5.1. Node 24 ships npm 11.x, but early 24.x releases
+      # predate 11.5.1, so upgrade explicitly rather than depending on the runner image.
+      - name: Ensure an OIDC-capable npm
+        run: |
+          npm install -g npm@latest
+          npm --version
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # Tests already ran in the `test` job above; `npm run release` rebuilds before publishing.
+      - name: Create release PR or publish
+        uses: changesets/action@v1
+        with:
+          version: npm run changeset:version
+          publish: npm run release
+          commit: 'chore: version packages'
+          title: 'chore: version packages'
+        env:
+          # Opens the PR, and lets @changesets/changelog-github link PRs and authors.
+          # No NPM_TOKEN: npm authenticates via OIDC, and provenance is attached automatically.
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}

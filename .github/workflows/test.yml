@@ -1,0 +1,47 @@
+name: Test
+
+on:
+  pull_request:
+  # Reusable so release.yml can depend on it: a publish must never happen on a red suite, and
+  # running the *same* workflow means the release gate cannot drift from what PRs are checked with.
+  workflow_call:
+
+concurrency:
+  # Prefixed so this never collides with the caller's group when invoked via workflow_call —
+  # `github.workflow` resolves to the *calling* workflow there, which would otherwise deadlock
+  # against release.yml's own concurrency group.
+  group: test-${{ github.workflow }}-${{ github.ref }}
+  # Supersede stale PR runs, but never cancel a run that a release is waiting on.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    strategy:
+      # Report every failing version, not just the first — a break is often version-specific.
+      fail-fast: false
+      matrix:
+        # Floor from package.json `engines`, current LTS, and current. Verified green on all three.
+        node: [22, 24]
+    steps:
+      - uses: actions/checkout@v4
+
+      # Install with bun to match bun.lock; the suite itself runs under the matrix Node.
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # `pretest` builds first, so this also proves the publishable artifact compiles on this Node.
+      - name: Test
+        run: npm test

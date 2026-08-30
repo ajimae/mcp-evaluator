@@ -1,0 +1,115 @@
+{
+  "name": "mcp-evaluator",
+  "version": "0.1.0",
+  "description": "Model-agnostic harness that measures how well LLMs call the tools of any MCP server",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "eval",
+    "evals",
+    "benchmark",
+    "tool-calling",
+    "llm",
+    "anthropic",
+    "openai",
+    "gemini",
+    "ollama"
+  ],
+  "homepage": "https://github.com/ajimae/mcp-evaluator#readme",
+  "bugs": "https://github.com/ajimae/mcp-evaluator/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ajimae/mcp-evaluator.git"
+  },
+  "author": "Chukwuemeka Ajima",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "mcp-evaluator": "dist/cli.cjs"
+  },
+  "files": [
+    "dist",
+    "examples",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20.11"
+  },
+  "peerDependencies": {
+    "@anthropic-ai/sdk": ">=0.30.0",
+    "@google/genai": ">=1.0.0",
+    "@langfuse/client": ">=5.0.0",
+    "@langfuse/otel": ">=5.0.0",
+    "@langfuse/tracing": ">=5.0.0",
+    "@opentelemetry/api": ">=1.9.0",
+    "@opentelemetry/sdk-node": ">=0.50.0",
+    "openai": ">=4.60.0"
+  },
+  "peerDependenciesMeta": {
+    "@anthropic-ai/sdk": {
+      "optional": true
+    },
+    "@google/genai": {
+      "optional": true
+    },
+    "@langfuse/client": {
+      "optional": true
+    },
+    "@langfuse/otel": {
+      "optional": true
+    },
+    "@langfuse/tracing": {
+      "optional": true
+    },
+    "@opentelemetry/api": {
+      "optional": true
+    },
+    "@opentelemetry/sdk-node": {
+      "optional": true
+    },
+    "openai": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@anthropic-ai/sdk": "^0.122.0",
+    "@changesets/changelog-github": "^1.0.0",
+    "@changesets/cli": "^3.0.1",
+    "@google/genai": "^2.19.0",
+    "@types/node": "^22.10.0",
+    "dts-bundle-generator": "^9.5.1",
+    "esbuild": "^0.28.2",
+    "openai": "^7.8.0",
+    "typescript": "^5.7.0",
+    "zod": "^4.5.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rm -rf dist && npm run typecheck && npm run build:bundle && npm run build:types",
+    "build:bundle": "node esbuild.cjs",
+    "build:types": "dts-bundle-generator --project tsconfig.json --no-check --silent -o dist/index.d.ts src/index.ts && dts-bundle-generator --project tsconfig.json --no-check --silent -o dist/cli.d.ts src/cli.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "pretest": "npm run build",
+    "test": "node --test test/*.test.mjs",
+    "prepublishOnly": "npm run build",
+    "changeset": "changeset",
+    "changeset:version": "changeset version",
+    "release": "npm run build && changeset publish"
+  },
+  "module": "./dist/index.mjs"
+}
