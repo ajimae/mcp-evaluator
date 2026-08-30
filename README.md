@@ -212,11 +212,21 @@ caught what tool-name matching structurally cannot.
 Call it directly if you want judge scores outside a full run:
 
 ```js
-import { judgeRun, createProvider } from 'mcp-evaluator';
+import { runEvals, loadConfigFile, judgeRun, createProvider } from 'mcp-evaluator';
 
+const config = await loadConfigFile('.mcpevalrc');
+
+// Every result carries the resolved scenario and the raw run it was graded from.
+const { results } = await runEvals({ ...config, reporters: { console: false } });
+
+// Judge afterwards — with a stronger model, or to re-grade without paying for the runs again.
 const judge = await createProvider({ provider: 'anthropic', modelId: 'claude-sonnet-5' });
-const scores = await judgeRun(resolvedScenario, run, judge);
-// [{ name: 'tool_appropriateness', value: 1, dataType: 'NUMERIC', comment: '…' }, …]
+
+for (const result of results) {
+  const scores = await judgeRun(result.scenario, result.run, judge);
+  // [{ name: 'tool_appropriateness', value: 1, dataType: 'NUMERIC', comment: '…' }, …]
+  result.scores.push(...scores);
+}
 ```
 
 ## CLI
@@ -503,7 +513,10 @@ only; nothing dispatches on it inside the loop.
 Turn the built-in reporters off and consume `results` directly:
 
 ```js
-import { runEvals, buildJsonReport, buildLeaderboard, modelLabel } from 'mcp-evaluator';
+import { runEvals, loadConfigFile, buildJsonReport, buildLeaderboard, modelLabel } from 'mcp-evaluator';
+
+// Reuse the config file you already have rather than repeating it in the script.
+const config = await loadConfigFile('.mcpevalrc');
 
 const { results } = await runEvals({ ...config, reporters: { console: false } });
 
@@ -536,6 +549,10 @@ Nothing says the variable has to be the model. Hold the model fixed and vary `sy
 measure how much guidance your tool descriptions actually need:
 
 ```js
+import { runEvals, loadConfigFile } from 'mcp-evaluator';
+
+const config = await loadConfigFile('.mcpevalrc');
+
 const prompts = {
   bare: undefined,                                   // tool descriptions alone
   nudged: 'Always use a tool when one is relevant.',
