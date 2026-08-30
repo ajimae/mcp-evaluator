@@ -286,21 +286,32 @@ export function parseScenarios(raw: unknown): EvalScenario[] {
 
 /**
  * Fills in every optional scenario field so the runner and scorers never re-derive defaults:
- * `toolUnderTest` falls back to the first expected call, and `successCriteria` to
- * `tool-called-with` when any expected call constrains params (otherwise `tool-called`).
+ * `expectedToolCalls` defaults to none, `toolUnderTest` to the first expected call, and
+ * `successCriteria` to `tool-called-with` when any expected call constrains params (otherwise
+ * `tool-called`, or `no-error` when nothing is expected).
+ *
+ * Takes {@link EvalScenarioInput} — the shape a user authors, where `expectedToolCalls` may be
+ * omitted — so a hand-written scenario can be passed straight in when composing the low-level
+ * pieces, without first round-tripping it through {@link parseConfig}.
  */
-export function resolveScenario(scenario: EvalScenario, defaultMaxTurns: number): ResolvedScenario {
+export function resolveScenario(
+  scenario: EvalScenarioInput,
+  defaultMaxTurns: number
+): ResolvedScenario {
+  const expectedToolCalls = scenario.expectedToolCalls ?? [];
+
   return {
     ...scenario,
-    toolUnderTest: scenario.toolUnderTest ?? scenario.expectedToolCalls[0]?.toolName ?? scenario.id,
-    successCriteria: scenario.successCriteria ?? defaultSuccessCriteria(scenario),
+    expectedToolCalls,
+    toolUnderTest: scenario.toolUnderTest ?? expectedToolCalls[0]?.toolName ?? scenario.id,
+    successCriteria: scenario.successCriteria ?? defaultSuccessCriteria(expectedToolCalls),
     maxTurns: scenario.maxTurns ?? defaultMaxTurns,
   };
 }
 
-function defaultSuccessCriteria(scenario: EvalScenario): SuccessCriteriaType {
-  if (scenario.expectedToolCalls.length === 0) return 'no-error';
-  return scenario.expectedToolCalls.some((call) => call.requiredParams !== undefined)
+function defaultSuccessCriteria(expectedToolCalls: ExpectedToolCall[]): SuccessCriteriaType {
+  if (expectedToolCalls.length === 0) return 'no-error';
+  return expectedToolCalls.some((call) => call.requiredParams !== undefined)
     ? 'tool-called-with'
     : 'tool-called';
 }
