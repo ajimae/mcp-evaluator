@@ -74,6 +74,4 @@ jobs:
           commit: 'chore: version packages'
           title: 'chore: version packages'
         env:
-          # Opens the PR, and lets @changesets/changelog-github link PRs and authors.
-          # No NPM_TOKEN: npm authenticates via OIDC, and provenance is attached automatically.
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
