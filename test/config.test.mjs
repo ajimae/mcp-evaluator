@@ -101,3 +101,18 @@ describe('interpolateEnv', () => {
     delete process.env.MCPEVAL_TEST_QUOTE;
   });
 });
+
+describe('resolveScenario with an authored scenario', () => {
+  it('accepts a scenario that omits expectedToolCalls entirely', () => {
+    // The shape a user writes by hand, fed straight to the low-level pieces without parseConfig.
+    const resolved = resolveScenario(
+      { id: 'refusal', messages: [{ role: 'user', content: 'Delete everything.' }] },
+      5
+    );
+
+    assert.deepEqual(resolved.expectedToolCalls, [], 'defaulted rather than left undefined');
+    assert.equal(resolved.successCriteria, 'no-error');
+    assert.equal(resolved.toolUnderTest, 'refusal', 'falls back to the scenario id');
+    assert.equal(resolved.maxTurns, 5);
+  });
+});
