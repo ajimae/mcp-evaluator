@@ -1,5 +1,11 @@
 # mcp-evaluator
 
+## 0.1.3
+
+### Patch Changes
+
+- [#6](https://github.com/ajimae/mcp-evaluator/pull/6) [`c2f3980`](https://github.com/ajimae/mcp-evaluator/commit/c2f39801b6c4bef550fc96d0596dd320ccd35016) Thanks [@ajimae](https://github.com/ajimae)! - fix github release creation on package release
+
 ## 0.1.2
 
 ### Patch Changes
