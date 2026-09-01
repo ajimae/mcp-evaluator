@@ -1,5 +1,12 @@
 # mcp-evaluator
 
+## 0.1.2
+
+### Patch Changes
+
+- [#4](https://github.com/ajimae/mcp-evaluator/pull/4) [`a15be3b`](https://github.com/ajimae/mcp-evaluator/commit/a15be3b689af7534f35acd830d5c5eb2c52761a7) Thanks [@ajimae](https://github.com/ajimae)! - - add status badges to README.md file
+  - cleanup package.json file.
+
 ## 0.1.1
 
 ### Patch Changes
