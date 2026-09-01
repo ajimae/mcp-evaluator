@@ -73,5 +73,6 @@ jobs:
           publish: npm run release
           commit: 'chore: version packages'
           title: 'chore: version packages'
+          create-github-releases: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
