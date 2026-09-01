@@ -1,6 +1,6 @@
 {
   "name": "mcp-evaluator",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Model-agnostic harness that measures how well LLMs call the tools of any MCP server",
   "homepage": "https://github.com/ajimae/mcp-evaluator#readme",
   "bugs": "https://github.com/ajimae/mcp-evaluator/issues",
