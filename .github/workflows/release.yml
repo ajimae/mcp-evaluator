@@ -28,8 +28,6 @@ permissions:
   id-token: write # mint the OIDC token npm exchanges for publish rights
 
 jobs:
-  # The same workflow PRs run, across the whole supported Node range. `release` needs it, so a red
-  # suite blocks both the Version Packages PR and the publish.
   test:
     uses: ./.github/workflows/test.yml
 
@@ -43,9 +41,6 @@ jobs:
           # Changesets needs the full history to work out what has already been released.
           fetch-depth: 0
 
-      # Install with bun to match bun.lock. The changesets CLI itself runs through node — its bin
-      # does a top-level `await import()` that bun does not settle, so `bunx changeset` exits
-      # having done nothing.
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
@@ -55,8 +50,6 @@ jobs:
           node-version: 24
           registry-url: https://registry.npmjs.org
 
-      # Trusted publishing needs npm >= 11.5.1. Node 24 ships npm 11.x, but early 24.x releases
-      # predate 11.5.1, so upgrade explicitly rather than depending on the runner image.
       - name: Ensure an OIDC-capable npm
         run: |
           npm install -g npm@latest
@@ -65,7 +58,6 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      # Tests already ran in the `test` job above; `npm run release` rebuilds before publishing.
       - name: Create release PR or publish
         uses: changesets/action@v1
         with:
