@@ -2,19 +2,6 @@
   "name": "mcp-evaluator",
   "version": "0.1.1",
   "description": "Model-agnostic harness that measures how well LLMs call the tools of any MCP server",
-  "keywords": [
-    "mcp",
-    "model-context-protocol",
-    "eval",
-    "evals",
-    "benchmark",
-    "tool-calling",
-    "llm",
-    "anthropic",
-    "openai",
-    "gemini",
-    "ollama"
-  ],
   "homepage": "https://github.com/ajimae/mcp-evaluator#readme",
   "bugs": "https://github.com/ajimae/mcp-evaluator/issues",
   "repository": {
@@ -26,6 +13,7 @@
   "type": "module",
   "main": "./dist/index.cjs",
   "types": "./dist/index.d.ts",
+  "module": "./dist/index.mjs",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -40,14 +28,25 @@
   },
   "files": [
     "dist",
-    "examples",
     "README.md",
-    "CHANGELOG.md",
     "LICENSE"
   ],
   "engines": {
     "node": ">=20.11"
   },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "eval",
+    "evals",
+    "benchmark",
+    "tool-calling",
+    "llm",
+    "anthropic",
+    "openai",
+    "gemini",
+    "ollama"
+  ],
   "peerDependencies": {
     "@anthropic-ai/sdk": ">=0.30.0",
     "@google/genai": ">=1.0.0",
@@ -110,6 +109,5 @@
     "changeset": "changeset",
     "changeset:version": "changeset version",
     "release": "npm run build && changeset publish"
-  },
-  "module": "./dist/index.mjs"
+  }
 }

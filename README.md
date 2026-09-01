@@ -1,5 +1,9 @@
 # mcp-evaluator
 
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/ajimae/mcp-evaluator/.github%2Fworkflows%2Ftest.yml) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/ajimae/mcp-evaluator)](https://github.com/ajimae/mcp-evaluator/releases) ![NPM Downloads](https://img.shields.io/npm/dw/mcp-evaluator)
+
+[![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/ajimae/mcp-evaluator)](https://github/languages/code-size/ajimae/mcp-evaluator) [![GitHub issues](https://img.shields.io/github/issues/ajimae/mcp-evaluator)](https://github.com/ajimae/mcp-evaluator/issues) [![NPM](https://img.shields.io/npm/l/mcp-evaluator)](https://www.npmjs.com/package/mcp-evaluator/v/2.0.0#license)
+
 A model-agnostic harness that measures **how well different LLMs call the tools of your MCP server**.
 
 Each scenario poses a natural-language prompt to a real model, lets it drive an agentic loop against
